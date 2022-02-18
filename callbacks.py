@@ -10,7 +10,7 @@ import numpy as np
 class EarlyStopping:
     """earlystoppingクラス"""
 
-    def __init__(self, patience=5, verbose=False, path='models/checkpoint_model.pth'):
+    def __init__(self, patience=5, verbose=False, path='./models/checkpoint_model.pth'):
         """引数：最小値の非更新数カウンタ、表示設定、モデル格納path"""
 
         self.patience = patience    #設定ストップカウンタ
