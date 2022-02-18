@@ -1,6 +1,7 @@
 import os
 import torch
 from torch import optim
+from torch.utils.tensorboard import SummaryWriter
 
 from utils import fix_seed
 from train import epoch_loop
@@ -11,6 +12,7 @@ from datasets import load_tfds, pre_train_preprocessing
 
 if __name__ == "__main__":
     log_dir = "./logs"
+    writer = SummaryWriter(log_dir)
     seed = 42
     fix_seed(seed)
     x_dim = 28 * 28
@@ -37,10 +39,12 @@ if __name__ == "__main__":
             active=6,
             repeat=1),
         on_trace_ready=torch.profiler.tensorboard_trace_handler(log_dir),
+        record_shapes=True,
+        with_stack=True
     ) as profiler:
         for e in range(1, num_epochs+1):
-            model = epoch_loop(model, dataset_train, optimizer, loss_fn, device, e, num_epochs, batch_size, is_train=True, writer=profiler)
-            model = epoch_loop(model, dataset_valid, optimizer, loss_fn, device, e, num_epochs, batch_size, is_train=False, earlystopping=earlystopping, writer=profiler)
-            
+            model = epoch_loop(model, dataset_train, optimizer, loss_fn, device, e, num_epochs, batch_size, is_train=True, profiler=profiler, writer=writer)
+            model = epoch_loop(model, dataset_valid, optimizer, loss_fn, device, e, num_epochs, batch_size, is_train=False, earlystopping=earlystopping, profiler=profiler, writer=writer)
+
             if earlystopping.early_stop:
                 break
