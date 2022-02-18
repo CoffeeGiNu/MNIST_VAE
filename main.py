@@ -30,7 +30,7 @@ if __name__ == "__main__":
     
     model = VariationalAutoEncoder(x_dim, z_dim, device).to(device)
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
-    earlystopping = EarlyStopping()
+    earlystopping = EarlyStopping(patience=3)
 
     with torch.profiler.profile(
         schedule=torch.profiler.schedule(
