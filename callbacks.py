@@ -1,3 +1,4 @@
+import os
 import torch
 import numpy as np
 
@@ -9,7 +10,7 @@ import numpy as np
 class EarlyStopping:
     """earlystoppingクラス"""
 
-    def __init__(self, patience=5, verbose=False, path='checkpoint_model.pth'):
+    def __init__(self, patience=5, verbose=False, path='models/checkpoint_model.pth'):
         """引数：最小値の非更新数カウンタ、表示設定、モデル格納path"""
 
         self.patience = patience    #設定ストップカウンタ
@@ -19,6 +20,7 @@ class EarlyStopping:
         self.early_stop = False     #ストップフラグ
         self.val_loss_min = np.Inf   #前回のベストスコア記憶用
         self.path = path             #ベストモデル格納path
+        os.makedirs(path) if not os.path.exists(path) else None
 
     def __call__(self, val_loss, model):
         """

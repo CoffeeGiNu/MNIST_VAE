@@ -15,25 +15,25 @@ def pre_train_preprocessing(x, y):
 
 def load_train_ds(name, batch_size, preprocess_fn, 
     seed=42, num_prefetch=5, slice_point=75):
-    train_ds = tfds.load(name=name, split=f"train[:{slice_point}]")
+    train_ds = tfds.load(name=name, split=f"train[:{slice_point}%]")
     train_ds = train_ds.shuffle(int(len(train_ds)/seed), seed=seed
-        ).batch(batch_size).map(preprocess_fn).prefetch(num_prefetch)
+        ).batch(batch_size).prefetch(num_prefetch)
 
     return train_ds
 
 
 def load_valid_ds(name, batch_size, preprocess_fn, 
     seed=42, num_prefetch=5, slice_point=75):
-    valid_ds = tfds.load(name=name, split=f"train[{slice_point}:]")
+    valid_ds = tfds.load(name=name, split=f"train[{slice_point}%:]")
     valid_ds = valid_ds.shuffle(int(len(valid_ds)/seed), seed=seed
-        ).batch(batch_size).map(preprocess_fn).prefetch(num_prefetch)
+        ).batch(batch_size).prefetch(num_prefetch)
 
     return valid_ds
 
 
 def load_test_ds(name, batch_size, preprocess_fn, num_prefetch):
     test_ds = tfds.load(name=name, split="test")
-    test_ds = test_ds.batch(batch_size).map(preprocess_fn).prefetch(num_prefetch)
+    test_ds = test_ds.batch(batch_size).prefetch(num_prefetch)
 
     return test_ds
 
