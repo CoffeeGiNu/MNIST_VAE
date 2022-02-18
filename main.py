@@ -16,7 +16,7 @@ if __name__ == "__main__":
     seed = 42
     fix_seed(seed)
     x_dim = 28 * 28
-    z_dim = 10
+    z_dim = 3
     batch_size = 1024
     num_epochs = 1000
     learning_rate = 0.001
