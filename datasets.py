@@ -18,6 +18,7 @@ def load_train_ds(name, batch_size, preprocess_fn,
     train_ds = tfds.load(name=name, split=f"train[:{slice_point}%]")
     train_ds = train_ds.shuffle(int(len(train_ds)/seed), seed=seed
         ).batch(batch_size).prefetch(num_prefetch)
+    # train_set = train_set.shuffle(len(train_set), seed=seed, reshuffle_each_iteration=True).batch(batch_size).map(preprocess_fn).prefetch(num_prefetch)
 
     return train_ds
 
