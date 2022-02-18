@@ -7,4 +7,4 @@ class VariationalAutoEncoder(nn.Module):
     def __init__(self) -> None:
         super(VariationalAutoEncoder, self).__init__()
         self.eps = np.spacing(1)
-        
+        self
