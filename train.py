@@ -4,7 +4,6 @@ from tqdm.auto import tqdm
 import torch
 import torchvision
 import numpy as np
-from torch.utils.tensorboard import SummaryWriter
 
 
 def step(model, inputs, optimizer, criterion, device, is_train=True):
@@ -36,9 +35,9 @@ def epoch_loop(model, data_set, optimizer, criterion, device, epoch, num_epochs,
             inputs = data['image'] / 255
             model, loss, lower_bound, z, y = step(
                 model, inputs, optimizer, criterion, device, is_train=is_train)
-            if writer:
-                writer.add_scalar("Loss_train/KLD", -lower_bound[0].cpu().detach().numpy(), epoch + total)
-                writer.add_scalar("Loss_train/Reconst", -lower_bound[1].cpu().detach().numpy(), epoch + total)
+            # if writer:
+            #     writer.add_scalar("Loss_train/KLD", -lower_bound[0].cpu().detach().numpy(), epoch + total)
+            #     writer.add_scalar("Loss_train/Reconst", -lower_bound[1].cpu().detach().numpy(), epoch + total)
             total += batch_size
             loss_sum += loss * batch_size
             running_loss = loss_sum.item() / total
@@ -49,6 +48,7 @@ def epoch_loop(model, data_set, optimizer, criterion, device, epoch, num_epochs,
                 #  "accuracy":round(running_accuracy, 3)
                 }
             )
+            writer.step()
             pbar.update(1)
         if earlystopping:
             earlystopping((running_loss), model)
