@@ -116,23 +116,22 @@ class App(object):
             self.ax.figure.canvas.draw() 
 
 
-log_dir = "./logs"
-seed = 42
-fix_seed(seed)
-x_dim = 28 * 28
-z_dim = 2
-batch_size = 1000
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+if __name__ == "__main__":
+    log_dir = "./logs"
+    seed = 42
+    fix_seed(seed)
+    x_dim = 28 * 28
+    z_dim = 2
+    batch_size = 1000
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-_, _, dataset_test = load_tfds("mnist", batch_size=batch_size, seed=seed, preprocess_fn=None)
+    _, _, dataset_test = load_tfds("mnist", batch_size=batch_size, seed=seed, preprocess_fn=None)
 
-model = VariationalAutoEncoder(x_dim, z_dim, device)
-model.load_state_dict(torch.load("./models/checkpoint_z2.pth"))
-model.eval()
+    model = VariationalAutoEncoder(x_dim, z_dim, device)
+    model.load_state_dict(torch.load("./models/checkpoint_z2.pth"))
+    model.eval()
 
-cm = plt.get_cmap("tab10")
-sns.set_style('ticks')
+    cm = plt.get_cmap("tab10")
+    sns.set_style('ticks')
 
-
-
-app = App(model)
+    app = App(model)
