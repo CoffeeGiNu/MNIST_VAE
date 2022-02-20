@@ -1,10 +1,12 @@
+import os
+os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
+
 import torch
 from PIL import Image
 import seaborn as sns
 import matplotlib.pyplot as plt
 
 from utils import fix_seed
-from datasets import load_tfds
 from models import VariationalAutoEncoder
 
 # References: 
@@ -125,13 +127,14 @@ if __name__ == "__main__":
     batch_size = 1000
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    _, _, dataset_test = load_tfds("mnist", batch_size=batch_size, seed=seed, preprocess_fn=None)
+    # _, _, dataset_test = load_tfds("mnist", batch_size=batch_size, seed=seed, preprocess_fn=None)
 
     model = VariationalAutoEncoder(x_dim, z_dim, device)
     model.load_state_dict(torch.load("./models/checkpoint_z2.pth"))
     model.eval()
     for param in model.parameters():
         param.grad = None
+    model.to(device)
 
     cm = plt.get_cmap("tab10")
     sns.set_style('ticks')
