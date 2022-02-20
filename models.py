@@ -1,7 +1,6 @@
 import torch
 import numpy as np
 import torch.nn as nn
-import torch.nn.functional as F
 
 
 class Encoder(nn.Module):
@@ -68,6 +67,7 @@ class VariationalAutoEncoder(nn.Module):
         z = self.pseudo_sample(mean, log_var)
         y = self.decoder(z)
         KLD = 1/2 * torch.sum(1 + log_var - mean**2 - torch.exp(log_var))
-        rc = torch.sum(x * torch.log(y + self.eps) + (1 - x) * torch.log(1 - y + self.eps))
+        rc = torch.sum(x * torch.log(y + self.eps) 
+           + (1 - x) * torch.log(1 - y + self.eps))
 
         return [KLD, rc], z, y
