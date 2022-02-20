@@ -17,4 +17,4 @@ model.load_state_dict(torch.load("./models/checkpoint_z10.pth"))
 model.eval()
 
 dummy_input = torch.randn(1, 1, 784, device="cpu")
-torch.onnx.export(model, dummy_input, "./models/model.onnx", verbose=True)
+torch.onnx.export(model, dummy_input, "./models/model.onnx", input_names=["input"], output_names=["KLD", "RC", "latent", "output"], verbose=True)

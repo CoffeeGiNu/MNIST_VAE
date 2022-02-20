@@ -1,5 +1,4 @@
 import torch
-import numpy as np
 from PIL import Image
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -13,11 +12,12 @@ from models import VariationalAutoEncoder
 # https://matplotlib.org/3.1.0/gallery/misc/cursor_demo_sgskip.html
 
 class App(object):
-    def __init__(self, model, show_exsamples=True, clear=True):
+    def __init__(self, model, device='cpu', show_exsamples=True, clear=True):
         self.fig, self.ax = plt.subplots(1, 1, figsize=(9, 9))
         self.x, self.y = 0.0, 0.0
         self.clear = clear
         self.model = model
+        self.device = device
         self.show_examples = show_exsamples
         self.xlim = None
         self.ylim = None
@@ -59,7 +59,7 @@ class App(object):
         self.ax.imshow(self.back_im, extent=[*self.xlim, *self.ylim], alpha=0.8)
     
     def reconst_img(self):
-        z = torch.tensor([self.x, self.y], dtype=torch.float)
+        z = torch.tensor([self.x, self.y], dtype=torch.float).to(self.device)
         reconst = self.model.decoder(z).cpu().detach().numpy().reshape(28, 28)
         self.ax.imshow(reconst*255, "gray", extent=[2,4,2,4], alpha=1)
 
@@ -78,13 +78,12 @@ class App(object):
         self.reconst_img()
         
         # update
-        self.ax.figure.canvas.draw() 
+        self.ax.figure.canvas.draw()
     
     def on_press(self, event):
         if not event.inaxes:
             return
         print(f'on_press(): {event.button}, {event.xdata:1.2f}, {event.ydata:1.2f}', )
-        self.on_release(event)
     
     def on_release(self, event):
         if not event.button == 1: return
@@ -93,27 +92,28 @@ class App(object):
         self.draw()
         
     def on_key(self, event):
-        print(f'on_key(): {event.key}, {event.xdata:1.2f}, {event.ydata:1.2f}', )
-
         # Your events
         if event.key == "left":
-            self.x -= 0.1
+            self.x -= 0.15
             self.draw()
         elif event.key == "right":
-            self.x += 0.1
+            self.x += 0.15
             self.draw()
         elif event.key == "down":
-            self.y -= 0.1
+            self.y -= 0.15
             self.draw()
         elif event.key == "up":
-            self.y += 0.1
+            self.y += 0.15
             self.draw()
         elif event.key == "c":
             self.ax.clear()
             self.ax.set_xlim(-4, 4)
             self.ax.set_ylim(-4, 4)
             self.ax.grid()
+            if self.show_examples:
+                self._show_examples_plot()
             self.ax.figure.canvas.draw() 
+        print(f'on_key(): {event.key}, {self.x:1.2f}, {self.y:1.2f}', )
 
 
 if __name__ == "__main__":
@@ -130,8 +130,10 @@ if __name__ == "__main__":
     model = VariationalAutoEncoder(x_dim, z_dim, device)
     model.load_state_dict(torch.load("./models/checkpoint_z2.pth"))
     model.eval()
+    for param in model.parameters():
+        param.grad = None
 
     cm = plt.get_cmap("tab10")
     sns.set_style('ticks')
 
-    app = App(model)
+    app = App(model, device)
